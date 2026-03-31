@@ -22,7 +22,6 @@ def animate_potential_field():
     q_current = np.copy(q_start)
     trajectory = [np.copy(q_current)]
 
-    # Setup Animation
     plt.ion()
     _, ax = plt.subplots(figsize=(7, 7))
 
