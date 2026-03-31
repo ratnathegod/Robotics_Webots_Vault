@@ -1,0 +1,111 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+% Solution placeholder command
+\newcommand{\solutionspace}{%
+  \vspace{0.2em}%
+  \noindent\textbf{\textcolor{blue}{Solution:}}\par
+  %===============================================
+  % YOUR SOLUTION HERE
+  % 0em
+}
+
+\begin{document}
+
+\title{CSCI 3302: Introduction to Robotics\\Homework 2: Odometry and Kinematics}
+\date{Due: March 24, 2026, 11:59 PM}
+% March 10, 2026, 11:59 PM
+\maketitle
+\noindent
+Submission: Upload a single compressed file containing three files including HW3\_Intro\_to\_Robotics.pdf and potential\_field.py and rrt.py.\\
+Resources: Textbook Chapter 13, Lecture 6, 7 and 8.\\[0.5em]
+% ---------------------------------------------------------
+% PROBLEM 1
+% ---------------------------------------------------------
+\section*{Problem 1: Potential Fields [50 points]}
+
+\paragraph{Background:}
+Artificial Potential Fields operate by treating the robot as a particle moving under the influence of an artificial energy field. The goal exerts an attractive force (pulling the robot), while obstacles exert repulsive forces (pushing the robot away). The robot navigates by taking steps in the direction of the negated gradient of this field, simulating gradient descent.
+
+
+You are given a 2D workspace with a robot starting at coordinate $\mathbf{q}_0 = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$, a goal located at $\mathbf{q}_{goal} = \begin{bmatrix} 4 \\ 5 \end{bmatrix}$, and a point obstacle located at $\mathbf{q}_{obs} = \begin{bmatrix} 2 \\ 2 \end{bmatrix}$.
+
+The potential field $U(\mathbf{q})$ is the sum of an attractive potential $U_{att}$ and a repulsive potential $U_{rep}$:
+\begin{itemize}
+    \item \textbf{Attractive Potential:} $U_{att}(\mathbf{q}) = \frac{1}{2} k_{att} \|\mathbf{q} - \mathbf{q}_{goal}\|^2$
+    \item \textbf{Repulsive Potential:} $U_{rep}(\mathbf{q}) = \frac{1}{2} k_{rep} \frac{1}{\|\mathbf{q} - \mathbf{q}_{obs}\|^2}$
+\end{itemize}
+Assume the gain constants are $k_{att} = 10$ and $k_{rep} = 5$. \textbf{Please round all numerical calculations and final answers to the second decimal places.}
+
+
+\paragraph{Tasks:}
+\begin{enumerate}
+    \item \textbf{[10 pts]} Derive the analytical gradient vector equations for the attractive field ($\nabla U_{att}$) and the repulsive field ($\nabla U_{rep}$) with respect to the robot's position $\mathbf{q} = [x, y]^T$. \\
+    \solutionspace
+        % write your solution here
+        \vspace{0.3cm}
+    \item \textbf{[10 pts]} Measure the total gradient $\nabla U(\mathbf{q}_0)$ at the robot's starting position $\mathbf{q}_0 = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$. Show your math step-by-step. \\
+    \solutionspace
+        % write your solution here
+        \vspace{0.3cm}
+    \item \textbf{[10 pts]} Using the gradient descent update rule $\xi_{t+1} = \xi_t - \alpha \nabla_{\xi} U(\xi_t)$, calculate the robot's next position $\mathbf{q}_1$ after a single time step, assuming a learning rate (step size) of $\alpha = 0.01$.
+    \solutionspace
+        % write your solution here
+        \vspace{0.3cm}
+    \item \textbf{[10 pts] Coding Problem:} Open the provided starter script \texttt{potential\_field.py} and complete the \texttt{TODO}s to implement the analytical gradients you derived above. The script SHOULD use the gradient descent update rule to iteratively guide the agent from the start position to the goal. Please paste a screenshot of the resulting plot here. Save your completed Python code, as you will need to submit it along with your written assignment. \\
+    \solutionspace
+        % write your solution here
+        \vspace{0.3cm}
+
+    \item \textbf{[10 pts]} In your Python script, temporarily change the goal position to $\mathbf{q}_{goal} = \begin{bmatrix} 5 \\ 5 \end{bmatrix}$ and run the simulation again. Observe the resulting trajectory. Does the robot reach the goal? Discuss why this specific behavior occurs based on the geometric arrangement of the start, obstacle, and goal positions. \textit{(Note: Please do not submit the modified Python code for this step. Only submit the working code from the previous question.)} \\
+    \solutionspace
+        % write your solution here
+        \vspace{0.3cm}
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% ---------------------------------------------------------
+% PROBLEM 2
+% ---------------------------------------------------------
+\section*{Problem 2: Rapidly-exploring Random Trees (RRT)[30 points]}
+In Problem 1, you observed how Artificial Potential Fields can easily get trapped in local minima when navigating around obstacles (specifically when the start, obstacle, and goal are collinear). To solve this, sampling-based planners like Rapidly-exploring Random Trees (RRT) explore the configuration space globally.
+
+\textbf{This is a coding problem.} You are given a 2D workspace with a robot starting at $\mathbf{q}_{start} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$ and a goal located at $\mathbf{q}_{goal} = \begin{bmatrix} 5 \\ 5 \end{bmatrix}$. This time, the workspace contains \textbf{multiple circular obstacles}, including the one at $\begin{bmatrix} 2 \\ 2 \end{bmatrix}$ that previously trapped your robot.
+
+Open the provided starter script \texttt{rrt.py}. You must complete the core steps of the RRT algorithm as defined in the lecture slides:
+\begin{enumerate}
+    \item \textbf{[10 pts]} Complete the \texttt{get\_nearest\_node} function to find the closest existing node $\mathbf{q}_{near}$ in the tree to the randomly sampled point $\mathbf{q}_{rand}$.
+    \item \textbf{[10 pts]} Complete the \texttt{extend} function to generate $\mathbf{q}_{new}$ by stepping a maximum incremental distance ($\Delta q$) from $\mathbf{q}_{near}$ toward $\mathbf{q}_{rand}$.
+    \item \textbf{[10 pts]} Complete the \texttt{is\_collision\_free} function to check if the new node falls inside any of the circular obstacles.
+\end{enumerate}
+
+Run the script. It will generate an animation of the RRT graph growing to explore the space and finding a valid, collision-free path to the goal. Paste a screenshot of the final plotted path below, and submit your completed Python code. \\
+\solutionspace
+    % Paste the screenshot here
+    \vspace{0.3cm}
+
+% ---------------------------------------------------------
+% PROBLEM 3
+% ---------------------------------------------------------
+\section*{Problem 3: Sampling-Based Path Planning [20 points]}
+\begin{enumerate}
+    \item \textbf{[10 pts] Completeness and Optimality:}
+    Are Probabilistic Roadmap (PRM) and RRT considered \textit{complete}, \textit{probabilistic complete} and \textit{optimal} algorithms? State yes or no for these three properties, and specifically define \textit{probabilistic complete} based on the lecture material. \\
+    \solutionspace
+        % write your solution here
+        \vspace{0.3cm}
+
+    \item \textbf{[10 pts] Non-Holonomic Constraints:}
+    This question is an extension of Problem 2, where you implemented the RRT algorithm in code. A differential-drive robot and a standard car are both non-holonomic vehicles. A system is non-holonomic when closed trajectories in its configuration space may not return it to its original state. Because the order of motions matters, these vehicles cannot move in arbitrary directions, such as driving instantly sideways. If you want to use RRT to plan a path for a non-holonomic robot, how must the standard algorithm be adapted when calculating $q_{new}$? (Hint: What specific function must be designed to ensure the robot can physically travel from $q_{near}$ to $q_{new}$?) \\
+    \solutionspace
+        % write your solution here
+        \vspace{0.3cm}
+
+\end{enumerate}
+
+\end{document}
